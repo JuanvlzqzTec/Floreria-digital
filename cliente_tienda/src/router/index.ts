@@ -1,3 +1,5 @@
+// src/router/index.ts
+
 import { createRouter, createWebHistory } from 'vue-router';
 import { auth } from '@/config/firebase';
 import type { RouteRecordRaw } from 'vue-router';
@@ -53,7 +55,7 @@ const router = createRouter({
 });
 
 // Guard de navegación para proteger rutas
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => { // <--- CAMBIO AQUÍ: 'from' a '_from'
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   
   if (requiresAuth && !auth.currentUser) {

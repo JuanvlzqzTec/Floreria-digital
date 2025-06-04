@@ -1,7 +1,7 @@
 // src/config/firebase.ts
 
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+// import { getAnalytics } from "firebase/analytics"; // <--- Comenta o elimina esta línea
 import { getAuth } from "firebase/auth";
 
 // Tu configuración de Firebase
@@ -17,7 +17,6 @@ const firebaseConfig = {
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
 // Inicializar auth y exportarlo
 const auth = getAuth(app);

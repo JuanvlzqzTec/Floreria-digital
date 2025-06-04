@@ -3,7 +3,7 @@ import { ClienteModel } from '../models/cliente.model';
 import { PersonalModel } from '../models/personal.model';
 import { PedidoModel } from '../models/pedido.model';
 import { ArregloModel } from '../models/arreglo.model';
-import ExcelJS from 'exceljs';
+import * as ExcelJS from 'exceljs';
 
 export class ReportesController {
   static async reporteClientes(req: Request, res: Response) {

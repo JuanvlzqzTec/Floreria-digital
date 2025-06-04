@@ -1,25 +1,20 @@
-version: '3.8'
-
 services:
-  # Base de datos MySQL
   mysql_db:
     image: mysql:8.0
     container_name: floreria_mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: floreria_db
-      MYSQL_USER: floreria_user
-      MYSQL_PASSWORD: floreria_password
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # <-- Ruta desde la raíz
     networks:
       - floreria_network
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
-  # Backend API
   api_tienda:
     build: ./api_tienda
     container_name: floreria_api
@@ -29,20 +24,17 @@ services:
     environment:
       PORT: 3000
       DB_HOST: mysql_db
-      DB_USER: floreria_user
-      DB_PASSWORD: floreria_password
+      DB_USER: root
+      DB_PASSWORD: root
       DB_NAME: floreria_db
       JWT_SECRET: your-super-secret-jwt-key
-      NODE_ENV: production
     depends_on:
       - mysql_db
     networks:
       - floreria_network
-    volumes:
-      - ./api_tienda:/app
-      - /app/node_modules
+    # Esperar a que MySQL esté listo
+    command: sh -c "sleep 30 && node dist/app.js"
 
-  # Frontend Vue
   cliente_tienda:
     build: ./cliente_tienda
     container_name: floreria_cliente
