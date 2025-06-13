@@ -139,7 +139,7 @@ npm run preview  # Preview production build
 This project is part of the Web Programming course at the Instituto Tecnológico de Culiacán.
 
 ## 👥 Team
-* **Developed by**: `Juan Antonio Velazquez Alarcon`
+* **Developed by**: Juan Antonio Velazquez Alarcon
 * **Professor**: M.C. Martín Leonardo Nevarez Rivas
 * **Subject**: Web Programming
 * **Deadline**: June 3, 2025
