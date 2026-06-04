@@ -1,24 +1,16 @@
-// src/config/firebase.ts
-
 import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics"; // <--- Comenta o elimina esta línea
 import { getAuth } from "firebase/auth";
 
-// Tu configuración de Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyBmrIJccyNffnKub8BvDIkeyuQAFr_ez_k",
-  authDomain: "prowebproyecto-30a66.firebaseapp.com",
-  projectId: "prowebproyecto-30a66",
-  storageBucket: "prowebproyecto-30a66.firebasestorage.app",
-  messagingSenderId: "56200106928",
-  appId: "1:56200106928:web:badc15e0df805bbefdbc75",
-  measurementId: "G-X2T7EGR16C"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
-
-// Inicializar auth y exportarlo
 const auth = getAuth(app);
 
 export { auth };

@@ -1,4 +1,4 @@
-# 🌸 Florería Digital — Flower Shop Management System
+# Florería Digital — Flower Shop Management System
 
 A fullstack web application for managing a flower shop, built as a final project for the Web Programming course at Instituto Tecnológico de Culiacán.
 
@@ -9,13 +9,13 @@ A fullstack web application for managing a flower shop, built as a final project
 
 ---
 
-## 🎯 Problem it solves
+## Problem it solves
 
 A flower shop needs to manage employees, customers, orders, and its floral arrangement catalog from a single place. This system centralizes all those operations into a modern web interface, with Excel-exportable reports and access control via authentication.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 The system is split into two independent modules, orchestrated with Docker Compose:
 
@@ -69,7 +69,7 @@ src/
 
 ---
 
-## ⚙️ Features
+## Features
 
 ### CRUD Modules
 | Module | Operations |
@@ -94,7 +94,7 @@ src/
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
@@ -116,7 +116,7 @@ src/
 
 ---
 
-## 🗄️ Data Model
+## Data Model
 
 ```
 personal (staff)      clientes (customers)
@@ -144,7 +144,7 @@ estatus (1|2)             id_personal (FK)
 
 ---
 
-## 🚀 Installation & Running
+## Installation & Running
 
 ### Prerequisites
 - Docker Desktop
@@ -175,7 +175,7 @@ A demo user is available to explore the system:
 
 ---
 
-## 👨‍💻 Author
+## 👨Author
 
 **Juan Antonio Velázquez Alarcón**  
 Computer Systems Engineering  

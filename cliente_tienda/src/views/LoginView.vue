@@ -3,7 +3,7 @@
     <div class="login-card">
       <div class="login-header">
         <h1>Florería Digital</h1>
-        <p>Ingresa a tu cuenta</p>
+        <p>{{ isRegistering ? 'Crea tu cuenta' : 'Ingresa a tu cuenta' }}</p>
       </div>
 
       <form @submit.prevent="handleSubmit" class="login-form">
@@ -35,17 +35,36 @@
           <p v-if="errors.password" class="form-error">{{ errors.password }}</p>
         </div>
 
+        <div v-if="isRegistering" class="form-group">
+          <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+          <input
+            id="confirmPassword"
+            v-model="form.confirmPassword"
+            type="password"
+            class="form-input"
+            :class="{ 'input-error': errors.confirmPassword }"
+            placeholder="••••••••"
+            required
+          />
+          <p v-if="errors.confirmPassword" class="form-error">{{ errors.confirmPassword }}</p>
+        </div>
+
         <div v-if="authStore.error" class="alert alert-error">
           {{ authStore.error }}
         </div>
 
         <button type="submit" class="btn btn-primary w-full" :disabled="loading">
-          {{ loading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+          {{ loading ? 'Procesando...' : isRegistering ? 'Registrarse' : 'Iniciar Sesión' }}
         </button>
       </form>
 
       <div class="login-footer">
-        <p>¿No tienes cuenta? <a href="#" @click.prevent="isRegistering = !isRegistering">{{ isRegistering ? 'Iniciar sesión' : 'Registrarse' }}</a></p>
+        <p>
+          {{ isRegistering ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?' }}
+          <a href="#" @click.prevent="toggleMode">
+            {{ isRegistering ? 'Iniciar sesión' : 'Registrarse' }}
+          </a>
+        </p>
       </div>
     </div>
   </div>
@@ -65,10 +84,19 @@ const isRegistering = ref(false); // Para alternar entre login y registro
 
 const form = reactive({
   email: '',
-  password: ''
+  password: '',
+  confirmPassword: ''
 });
 
-const errors = ref<{ email?: string; password?: string }>({});
+const errors = ref<{ email?: string; password?: string; confirmPassword?: string }>({});
+
+const toggleMode = () => {
+  isRegistering.value = !isRegistering.value;
+  errors.value = {};
+  form.email = '';
+  form.password = '';
+  form.confirmPassword = '';
+};
 
 // Esquema de validación con Zod
 const loginSchema = z.object({
@@ -76,43 +104,41 @@ const loginSchema = z.object({
   password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres')
 });
 
+const registerSchema = z.object({
+  email: z.string().email('Correo electrónico inválido'),
+  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+  confirmPassword: z.string()
+}).refine((data: { password: string; confirmPassword: string }) => data.password === data.confirmPassword, {
+  message: 'Las contraseñas no coinciden',
+  path: ['confirmPassword']
+});
+
+
 const handleSubmit = async () => {
   try {
-    errors.value = {}; // Limpiar errores previos
+    errors.value = {};
     loading.value = true;
 
-    // Validar formulario
-    const validatedData = loginSchema.parse(form);
-
     if (isRegistering.value) {
+      const validatedData = registerSchema.parse(form);
       await authStore.register(validatedData.email, validatedData.password);
-      // Podrías querer redirigir a login o mostrar un mensaje de éxito aquí
-      // Por ahora, asumimos que register también redirige o maneja el estado
-      // Si register no loguea automáticamente:
-      // isRegistering.value = false; // Volver a modo login
-      // alert('¡Registro exitoso! Por favor, inicia sesión.');
     } else {
+      const validatedData = loginSchema.parse(form);
       await authStore.login(validatedData.email, validatedData.password);
     }
 
-    // Si el login/registro fue exitoso y el store actualiza currentUser,
-    // el guard de navegación en router/index.ts debería redirigir a '/'
     router.push('/');
-
   } catch (error) {
     if (error instanceof z.ZodError) {
       error.errors.forEach(err => {
         if (err.path[0] === 'email') errors.value.email = err.message;
         if (err.path[0] === 'password') errors.value.password = err.message;
+        if (err.path[0] === 'confirmPassword') errors.value.confirmPassword = err.message;
       });
     } else if (authStore.error) {
-      // El error ya debería estar en authStore.error y se mostrará en el template
-      // No es necesario hacer nada más aquí a menos que quieras un log adicional
-      console.error("Error de autenticación:", authStore.error);
+      console.error('Error de autenticación:', authStore.error);
     } else {
-      // Otros errores inesperados
       errors.value.email = 'Ocurrió un error inesperado. Intenta de nuevo.';
-      console.error("Error inesperado en handleSubmit:", error);
     }
   } finally {
     loading.value = false;
