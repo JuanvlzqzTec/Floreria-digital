@@ -8,7 +8,7 @@ export const corsOptions: CorsOptions = {
     'http://127.0.0.1',
     'http://127.0.0.1:80',
     'http://127.0.0.1:5173',
-    'https://floreria-cliente-production.up.railway.app' 
+    'https://gleaming-creativity-production-6cc6.up.railway.app'
   ],
   credentials: true,
   optionsSuccessStatus: 200,

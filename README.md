@@ -5,7 +5,7 @@ A fullstack web application for managing a flower shop, built as a final project
 > **Stack:** Vue.js 3 · Node.js · Express · TypeScript · MySQL · Firebase · Docker
 
 [![GitHub](https://img.shields.io/badge/GitHub-JuanvlzqzTec-181717?style=flat&logo=github)](https://github.com/JuanvlzqzTec)
-[![Demo](https://img.shields.io/badge/Demo-Live-success?style=flat)](https://tu-url.railway.app)
+[![Demo](https://img.shields.io/badge/Demo-Live-success?style=flat)](https://gleaming-creativity-production-6cc6.up.railway.app)
 
 ---
 
@@ -182,4 +182,4 @@ Computer Systems Engineering
 Instituto Tecnológico de Culiacán  
 
 [![GitHub](https://img.shields.io/badge/GitHub-JuanvlzqzTec-181717?style=flat&logo=github)](https://github.com/JuanvlzqzTec)
-[![Demo](https://img.shields.io/badge/Demo-Live-success?style=flat)](https://tu-url.railway.app)
+[![Demo](https://img.shields.io/badge/Demo-Live-success?style=flat)](https://gleaming-creativity-production-6cc6.up.railway.app)
