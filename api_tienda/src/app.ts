@@ -21,7 +21,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(errorHandler);
 
 // Ruta de prueba
 app.get('/api/health', (req, res) => {
@@ -34,20 +33,19 @@ app.use('/api/pedidos', pedidosRoutes);
 app.use('/api/arreglos', arreglosRoutes);
 app.use('/api/reportes', reportesRoutes);
 
-// Middleware de manejo de errores
+// Middleware de manejo de errores — siempre al final
 app.use(errorHandler);
 
-// Verificar conexión a base de datos e iniciar servidor
 const startServer = async () => {
   try {
     await pool.getConnection();
-    console.log('✅ Conexión a base de datos establecida');
+    console.log('Conexión a base de datos establecida');
     
     app.listen(PORT, () => {
-      console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+      console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('❌ Error al conectar con la base de datos:', error);
+    console.error('Error al conectar con la base de datos:', error);
     process.exit(1);
   }
 };

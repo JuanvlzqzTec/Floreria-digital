@@ -1,7 +1,6 @@
-// src/router/index.ts
-
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, type RouteLocationNormalized, type NavigationGuardNext } from 'vue-router';
 import { auth } from '@/config/firebase';
+import { onAuthStateChanged, type User } from 'firebase/auth';
 import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -54,13 +53,26 @@ const router = createRouter({
   routes
 });
 
-// Guard de navegación para proteger rutas
-router.beforeEach((to, _from, next) => { // <--- CAMBIO AQUÍ: 'from' a '_from'
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  
-  if (requiresAuth && !auth.currentUser) {
+const getCurrentUser = (): Promise<User | null> => {
+  return new Promise((resolve) => {
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+};
+
+router.beforeEach(async (
+  to: RouteLocationNormalized,
+  _from: RouteLocationNormalized,
+  next: NavigationGuardNext
+) => {
+  const requiresAuth = to.matched.some((record: RouteRecordRaw) => record.meta?.requiresAuth);
+  const currentUser = await getCurrentUser();
+
+  if (requiresAuth && !currentUser) {
     next('/login');
-  } else if (!requiresAuth && auth.currentUser && to.path === '/login') {
+  } else if (!requiresAuth && currentUser && to.path === '/login') {
     next('/');
   } else {
     next();

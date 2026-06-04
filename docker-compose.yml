@@ -7,13 +7,18 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: floreria_db
     ports:
-      - "3306:3306"
+      - "3308:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # <-- Ruta desde la raíz
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - floreria_network
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api_tienda:
     build: ./api_tienda
@@ -27,13 +32,12 @@ services:
       DB_USER: root
       DB_PASSWORD: root
       DB_NAME: floreria_db
-      JWT_SECRET: your-super-secret-jwt-key
+      JWT_SECRET: Sistema1234
     depends_on:
-      - mysql_db
+      mysql_db:
+        condition: service_healthy
     networks:
       - floreria_network
-    # Esperar a que MySQL esté listo
-    command: sh -c "sleep 30 && node dist/app.js"
 
   cliente_tienda:
     build: ./cliente_tienda

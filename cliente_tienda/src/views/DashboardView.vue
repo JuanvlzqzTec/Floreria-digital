@@ -129,7 +129,6 @@ const formatDate = (dateString: string | Date): string => {
 
 const loadDashboardData = async () => {
   try {
-    console.log('Cargando datos del dashboard...');
     
     // Cargar estadísticas
     const [personal, clientes, pedidos] = await Promise.all([
@@ -137,10 +136,6 @@ const loadDashboardData = async () => {
       api.get('/clientes'),
       api.get('/pedidos')
     ]);
-    
-    console.log('Personal data:', personal.data);
-    console.log('Clientes data:', clientes.data);
-    console.log('Pedidos data:', pedidos.data);
     
     // Asegurarnos de que tenemos arrays
     const personalData = Array.isArray(personal.data) ? personal.data : [];
@@ -176,8 +171,6 @@ const loadDashboardData = async () => {
       })
       .slice(0, 5);
     
-    console.log('Stats finales:', stats.value);
-    console.log('Pedidos recientes:', pedidosRecientes.value);
   } catch (error) {
     console.error('Error al cargar datos del dashboard:', error);
   }

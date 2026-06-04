@@ -308,17 +308,16 @@ const form = reactive<PedidoForm>({ // <--- CAMBIO AQUÍ
 
 const errors = ref<Record<string, string>>({}); // <--- CAMBIO AQUÍ (mejor que any)
 
-// Zod Schema (ya parece estar bien alineado con PedidoForm)
 const pedidoSchema = z.object({
-  id_cliente: z.string().min(1, 'Debe seleccionar un cliente'),
-  id_arreglo: z.string().min(1, 'Debe seleccionar un arreglo'),
+  id_cliente: z.union([z.string(), z.number()]).transform((val: string | number) => Number(val)),
+  id_arreglo: z.union([z.string(), z.number()]).transform((val: string | number) => Number(val)),
   descripcion: z.string().optional(),
-  fecha_entrega: z.string().min(1, 'La fecha de entrega es requerida'), // datetime-local input value is string
+  fecha_entrega: z.string().min(1, 'La fecha de entrega es requerida'),
   direccion_entrega: z.string().min(5, 'La dirección debe tener al menos 5 caracteres'),
-  precio_sugerido: z.string().regex(/^\d+(\.\d{1,2})?$/, 'Precio inválido (ej: 123.45)'),
-  id_personal: z.string().optional(), // Puede ser una cadena vacía si no se asigna
-  entregado: z.string(), // Validar que sea "1" o "2" si es necesario con .refine() o enum
-  pagado: z.string()     // Validar que sea "1" o "2" si es necesario
+  precio_sugerido: z.union([z.string(), z.number()]).transform((val: string | number) => Number(val)),
+  id_personal: z.union([z.string(), z.number()]).transform((val: string | number) => Number(val)).optional(),
+  entregado: z.union([z.string(), z.number()]).transform((val: string | number) => Number(val)),
+  pagado: z.union([z.string(), z.number()]).transform((val: string | number) => Number(val))
 });
 
 const formatDate = (dateString: string | Date | null | undefined): string => {
@@ -336,15 +335,10 @@ const formatDate = (dateString: string | Date | null | undefined): string => {
 const formatDateForInput = (dateString: string | Date): string => {
   if (!dateString) return '';
   try {
-    const d = new Date(dateString);
-    if (isNaN(d.getTime())) return ''; // Chequeo por fecha inválida
-
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    // Tomar el string directo sin conversión de timezone
+    const str = typeof dateString === 'string' ? dateString : dateString.toISOString();
+    // Extraer fecha y hora del string ISO directamente
+    return str.slice(0, 16).replace(' ', 'T');
   } catch (e) {
     return '';
   }
@@ -426,26 +420,11 @@ const resetForm = () => {
 const savePedido = async () => {
   try {
     errors.value = {};
-    // Zod parseará el objeto form (que es PedidoForm)
-    const validatedData = pedidoSchema.parse(form);
-
-    // Convertir a los tipos numéricos esperados por el backend
-    const dataToSend = {
-      ...validatedData, // Incluye descripcion, fecha_entrega, direccion_entrega (todos strings)
-      id_cliente: Number(validatedData.id_cliente),
-      id_arreglo: Number(validatedData.id_arreglo),
-      precio_sugerido: parseFloat(validatedData.precio_sugerido), // Usar parseFloat para decimales
-      // id_personal puede ser "" si "Sin asignar" fue seleccionado. Convertir a null si es necesario.
-      id_personal: validatedData.id_personal ? Number(validatedData.id_personal) : null,
-      entregado: Number(validatedData.entregado),
-      pagado: Number(validatedData.pagado)
-    };
+    const dataToSend = pedidoSchema.parse(form);
 
     if (isEditing.value && form.folio) {
       await api.put(`/pedidos/${form.folio}`, dataToSend);
     } else {
-      // 'dataToSend' ya no tiene 'folio' en su tipo (porque no está en pedidoSchema)
-      // y el backend se encarga de generar el folio para nuevos pedidos.
       await api.post('/pedidos', dataToSend);
     }
 
@@ -463,7 +442,6 @@ const savePedido = async () => {
       errors.value = newErrors;
     } else {
       console.error('Error al guardar pedido:', error);
-      // Mostrar error genérico al usuario
     }
   }
 };

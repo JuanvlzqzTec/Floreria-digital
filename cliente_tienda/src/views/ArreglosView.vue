@@ -207,8 +207,8 @@ const loadArreglos = async () => {
     if (filtroEstatus.value) params.append('estatus', filtroEstatus.value);
 
     // Asumimos que api.get devuelve { data: Arreglo[] }
-    const response = await api.get<{ data: Arreglo[] }>(`/arreglos?${params.toString()}`); // <--- CAMBIO AQUÍ: Tipado de la respuesta esperada
-    arreglos.value = response.data.data; // Ajusta esto si la estructura de tu respuesta es diferente (ej. si es response.data directamente)
+    const response = await api.get<Arreglo[]>(`/arreglos?${params.toString()}`);
+    arreglos.value = response.data;
   } catch (error) {
     console.error('Error al cargar arreglos:', error);
     // Aquí podrías añadir lógica para mostrar un error al usuario

@@ -9,9 +9,7 @@ export const pedidoSchema = z.object({
     .max(500, 'La descripción no puede exceder 500 caracteres')
     .optional()
     .nullable(),
-  fecha_entrega: z.string()
-    .datetime({ message: 'Formato de fecha inválido' })
-    .or(z.date()),
+  fecha_entrega: z.string().min(1, 'La fecha de entrega es requerida'),
   direccion_entrega: z.string()
     .min(5, 'La dirección debe tener al menos 5 caracteres')
     .max(200, 'La dirección no puede exceder 200 caracteres'),

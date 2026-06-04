@@ -161,7 +161,7 @@ export class PedidoModel {
     const params: any[] = [];
 
     if (filters.fecha_inicio && filters.fecha_fin) {
-      query += ' AND p.fecha_pedido BETWEEN ? AND ?';
+      query += ' AND DATE(CONVERT_TZ(p.fecha_pedido, "+00:00", "-07:00")) BETWEEN DATE(?) AND DATE(?)';
       params.push(filters.fecha_inicio, filters.fecha_fin);
     }
     if (filters.entregado !== undefined) {

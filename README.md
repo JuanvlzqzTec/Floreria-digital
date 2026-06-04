@@ -1,145 +1,185 @@
-# Digital Flower Shop - Web System
-A complete web system for managing a flower shop, developed with Node.js/Express (backend) and Vue.js 3 (frontend).
+# 🌸 Florería Digital — Flower Shop Management System
 
-## 🚀 Features
-* **Personnel Management**: Add, edit, and soft-delete employees.
-* **Customer Management**: Full CRUD operations for customers.
-* **Order Management**: Complete control of orders with delivery and payment statuses.
-* **Flower Arrangement Catalog**: Product management by categories.
-* **Reporting System**: Multiple reports with Excel export functionality.
-* **Authentication**: Login system using Firebase.
-* **Dockerization**: Fully containerized application.
+A fullstack web application for managing a flower shop, built as a final project for the Web Programming course at Instituto Tecnológico de Culiacán.
 
-## 📋 Prerequisites
-* Node.js 18+ and npm
-* Docker and Docker Compose
-* A Firebase account (for authentication)
-* Git
+> **Stack:** Vue.js 3 · Node.js · Express · TypeScript · MySQL · Firebase · Docker
 
-## 🛠️ Technologies Used
-**Backend (api_tienda)**
-* Node.js
-* Express
-* TypeScript
-* MySQL
-* Zod (validations)
-* ExcelJS (exporting)
-* JWT + Firebase Auth
+[![GitHub](https://img.shields.io/badge/GitHub-JuanvlzqzTec-181717?style=flat&logo=github)](https://github.com/JuanvlzqzTec)
+[![Demo](https://img.shields.io/badge/Demo-Live-success?style=flat)](https://tu-url.railway.app)
 
-**Frontend (cliente_tienda)**
-* Vue.js 3
-* Vite
-* TypeScript
-* Vue Router
-* Pinia
-* Axios
-* Firebase Auth
-* TailwindCSS
-* XLSX (Excel export)
+---
 
-## 📦 Installation
-1.  **Clone the repository**
-    ```bash
-    git clone <repository-url>
-    cd floreria-digital
-    ```
-2.  **Configure environment variables**
+## 🎯 Problem it solves
 
-    **Backend (`api_tienda/.env`)**
-    ```env
-    PORT=3000
-    DB_HOST=mysql_db
-    DB_USER=floreria_user
-    DB_PASSWORD=floreria_password
-    DB_NAME=floreria_db
-    JWT_SECRET=your-secret-key-here
-    ```
-    **Frontend (`cliente_tienda/.env`)**
-    ```env
-    VITE_API_URL=http://localhost:3000
-    VITE_FIREBASE_API_KEY=your-api-key
-    VITE_FIREBASE_AUTH_DOMAIN=your-auth-domain
-    VITE_FIREBASE_PROJECT_ID=your-project-id
-    VITE_FIREBASE_STORAGE_BUCKET=your-storage-bucket
-    VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
-    VITE_FIREBASE_APP_ID=your-app-id
-    ```
-3.  **Installation with Docker Compose (Recommended)**
-    ```bash
-    # From the project root
-    docker-compose up -d
-    ```
-    This will start:
-    * MySQL on port `3306`
-    * Backend API on `http://localhost:3000`
-    * Frontend on `http://localhost:80`
+A flower shop needs to manage employees, customers, orders, and its floral arrangement catalog from a single place. This system centralizes all those operations into a modern web interface, with Excel-exportable reports and access control via authentication.
 
-4.  **Manual Installation (Development)**
+---
 
-    **Backend**
-    ```bash
-    cd api_tienda
-    npm install
-    npm run dev
-    ```
-    **Frontend**
-    ```bash
-    cd cliente_tienda
-    npm install
-    npm run dev
-    ```
-    **Database**
-    ```bash
-    # Execute the init.sql script in MySQL
-    mysql -u root -p < init.sql
-    ```
+## 🏗️ Architecture
 
-## 📊 Database Structure
-**Main Tables**:
-* `personal`: Flower shop employees.
-* `clientes`: Customer records.
-* `arreglos_florales`: Product catalog.
-* `pedidos`: Orders and deliveries.
+The system is split into two independent modules, orchestrated with Docker Compose:
 
-## 🐳 Docker Commands
+```
+floreria-digital/
+├── api_tienda/       # Backend — REST API
+├── cliente_tienda/   # Frontend — SPA
+├── init.sql          # Schema and seed data
+└── docker-compose.yml
+```
+
+### Backend — `api_tienda`
+REST API built with **Node.js + Express + TypeScript**, organized in layers:
+
+```
+src/
+├── routes/       # Endpoint definitions
+├── controllers/  # Request and response handling
+├── models/       # Data access layer (MySQL)
+├── middlewares/  # Validation, error handling
+├── validations/  # Zod schemas
+├── config/       # Database, CORS
+└── utils/        # Order number generator
+```
+
+**Technical decisions:**
+- **Zod** for validation on both backend and frontend — shared schemas ensure consistency across layers
+- **mysql2** with connection pooling for better performance
+- **express-async-errors** for clean async error handling without try/catch on every route
+- **ExcelJS** for server-side report generation
+
+### Frontend — `cliente_tienda`
+SPA built with **Vue.js 3 + Vite + TypeScript**, with an architecture based on:
+
+```
+src/
+├── views/        # Main pages (Staff, Customers, Orders, etc.)
+├── components/   # Reusable components (Layout, Modals)
+├── stores/       # Global state with Pinia (authentication)
+├── services/     # HTTP client with Axios
+├── router/       # Navigation with auth guards
+├── config/       # Firebase configuration
+└── types/        # Shared TypeScript interfaces
+```
+
+**Technical decisions:**
+- **Pinia** as state store — simpler and better TypeScript support than Vuex
+- **Firebase Authentication** for session management without building auth from scratch
+- **Axios interceptors** to automatically attach the Firebase token to every request
+- Navigation guards with **explicit Firebase state waiting** to avoid race conditions on initial load
+
+---
+
+## ⚙️ Features
+
+### CRUD Modules
+| Module | Operations |
+|--------|------------|
+| Staff | Create, edit, soft-delete, view assigned orders |
+| Customers | Create, edit, delete |
+| Floral Arrangements | Create, edit, soft-delete, filter by type and status |
+| Orders | Register, edit, filter by delivery and payment status |
+
+### Reports with Excel export
+- Customer list report
+- Staff report by status
+- Orders by date range
+- Orders by delivery status
+- Orders by payment status (with total sum)
+- Orders by assigned staff member
+- Floral arrangements catalog by type
+
+### Authentication
+- Login and registration with Firebase Authentication
+- Protected routes — redirects to login if no active session
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Frontend | Vue.js 3 + Vite | SPA framework with optimized build |
+| Frontend | TypeScript | Static typing across the application |
+| Frontend | Pinia | Global state management |
+| Frontend | Axios | HTTP client with interceptors |
+| Frontend | Zod | Form validation |
+| Frontend | Firebase Auth | User authentication |
+| Frontend | XLSX + FileSaver | Client-side Excel export |
+| Backend | Node.js + Express | REST API server |
+| Backend | TypeScript | Static typing |
+| Backend | Zod | Request validation |
+| Backend | mysql2 | Database connection with pooling |
+| Backend | ExcelJS | Excel report generation |
+| Database | MySQL 8 | Data persistence |
+| Infrastructure | Docker + Docker Compose | Containerization of all services |
+| Infrastructure | Nginx | Frontend server in production |
+
+---
+
+## 🗄️ Data Model
+
+```
+personal (staff)      clientes (customers)
+────────────────      ────────────────────
+id (PK)               id_cliente (PK)
+nombre_completo       nombre_completo
+direccion             direccion
+telefono              telefono
+estatus (1|2)
+
+arreglos_florales         pedidos (orders)
+─────────────────         ───────────────
+id_arreglo (PK)           folio (PK)
+descripcion               id_cliente (FK)
+tipo_arreglo (1-4)        id_arreglo (FK)
+estatus (1|2)             id_personal (FK)
+                          descripcion
+                          fecha_pedido
+                          fecha_entrega
+                          direccion_entrega
+                          precio_sugerido
+                          entregado (1|2)
+                          pagado (1|2)
+```
+
+---
+
+## 🚀 Installation & Running
+
+### Prerequisites
+- Docker Desktop
+
+### Start the full system
+
 ```bash
-# Start services
+git clone <repository-url>
+cd floreria-digital
 docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-
-# Rebuild images
-docker-compose build
-
-# Access MySQL
-docker exec -it floreria_mysql mysql -u root -p
 ```
 
-## 🧪 Development
-**Available Scripts**
+Available services:
+- Frontend: `http://localhost`
+- API: `http://localhost:3000`
+- MySQL: port `3308`
 
-**Backend**
-```bash
-npm run dev      # Development with nodemon
-npm run build    # Compile TypeScript
-npm start        # Production
-```
-**Frontend**
-```bash
-npm run dev      # Development
-npm run build    # Compile for production
-npm run preview  # Preview production build
-```
+### System access
 
-## 📄 License
-This project is part of the Web Programming course at the Instituto Tecnológico de Culiacán.
+A demo user is available to explore the system:
 
-## 👥 Team
-* **Developed by**: Juan Antonio Velazquez Alarcon
-* **Professor**: M.C. Martín Leonardo Nevarez Rivas
-* **Subject**: Web Programming
-* **Deadline**: June 3, 2025
+| Field | Value |
+|-------|-------|
+| Email | admin@floreria.com |
+| Password | Admin1234 |
+
+> You can also create your own account using the registration form on the login screen.
+
+---
+
+## 👨‍💻 Author
+
+**Juan Antonio Velázquez Alarcón**  
+Computer Systems Engineering  
+Instituto Tecnológico de Culiacán  
+
+[![GitHub](https://img.shields.io/badge/GitHub-JuanvlzqzTec-181717?style=flat&logo=github)](https://github.com/JuanvlzqzTec)
+[![Demo](https://img.shields.io/badge/Demo-Live-success?style=flat)](https://tu-url.railway.app)

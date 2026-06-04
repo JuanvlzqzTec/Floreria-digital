@@ -293,7 +293,7 @@ const filtros = reactive<Filtros>({ // <--- CAMBIO AQUÍ
   arreglos: { tipo: '' }
 });
 
-const tableColumns = computed((): TableColumn[] => { // <--- CAMBIO AQUÍ: Tipo de retorno
+const tableColumns = computed((): TableColumn[] => {
   const tipo = reporteActual.value.titulo;
 
   if (tipo.includes('Clientes')) {
@@ -303,15 +303,7 @@ const tableColumns = computed((): TableColumn[] => { // <--- CAMBIO AQUÍ: Tipo 
       { key: 'direccion', label: 'Dirección' },
       { key: 'telefono', label: 'Teléfono' }
     ];
-  } else if (tipo.includes('Personal')) {
-    return [
-      { key: 'id', label: 'ID' },
-      { key: 'nombre_completo', label: 'Nombre Completo' },
-      { key: 'direccion', label: 'Dirección' },
-      { key: 'telefono', label: 'Teléfono' },
-      { key: 'estatus', label: 'Estatus', type: 'badge' }
-    ];
-  } else if (tipo.includes('Pedidos')) {
+  } else if (tipo.includes('Pedidos')) {  // <-- Pedidos ANTES que Personal
     return [
       { key: 'folio', label: 'Folio' },
       { key: 'cliente_nombre', label: 'Cliente' },
@@ -322,6 +314,14 @@ const tableColumns = computed((): TableColumn[] => { // <--- CAMBIO AQUÍ: Tipo 
       { key: 'precio_sugerido', label: 'Precio', type: 'currency' },
       { key: 'entregado', label: 'Entregado', type: 'badge' },
       { key: 'pagado', label: 'Pagado', type: 'badge' }
+    ];
+  } else if (tipo.includes('Personal')) {  // <-- Personal DESPUÉS
+    return [
+      { key: 'id', label: 'ID' },
+      { key: 'nombre_completo', label: 'Nombre Completo' },
+      { key: 'direccion', label: 'Dirección' },
+      { key: 'telefono', label: 'Teléfono' },
+      { key: 'estatus', label: 'Estatus', type: 'badge' }
     ];
   } else if (tipo.includes('Arreglos')) {
     return [
@@ -411,8 +411,8 @@ const generarReporte = async (tipoReporte: string) => { // <--- CAMBIO AQUÍ: No
         break;
       case 'pedidos-fecha':
         if (filtros.pedidos.fecha_inicio && filtros.pedidos.fecha_fin) {
-          params.append('fecha_inicio', filtros.pedidos.fecha_inicio);
-          params.append('fecha_fin', filtros.pedidos.fecha_fin);
+          params.append('fecha_inicio', `${filtros.pedidos.fecha_inicio}T00:00:00`);
+          params.append('fecha_fin', `${filtros.pedidos.fecha_fin}T23:59:59`);
         }
         response = await api.get<ReporteActualStructure>(`/reportes/pedidos?${params.toString()}`);
         apiResponseData = response.data;
@@ -433,15 +433,14 @@ const generarReporte = async (tipoReporte: string) => { // <--- CAMBIO AQUÍ: No
         break;
       case 'pedidos-personal':
         if (filtros.pedidos.id_personal) {
-          // Asumiendo que este endpoint devuelve directamente un array de Pedidos
           const pedidosDataResponse = await api.get<ReportPedido[]>(`/pedidos/personal/${filtros.pedidos.id_personal}`);
-          const data = pedidosDataResponse.data || [];
-          apiResponseData = { // Construimos el objeto ReporteActualStructure manualmente
-            titulo: 'Reporte de Pedidos por Personal',
+          const data = Array.isArray(pedidosDataResponse.data) ? pedidosDataResponse.data : [];
+          const personaSeleccionada = personal.value.find((p: PersonalMin) => String(p.id) === String(filtros.pedidos.id_personal));
+          apiResponseData = {
+            titulo: `Reporte de Pedidos por Personal - ${personaSeleccionada?.nombre_completo || ''}`,
             fecha: new Date(),
             total: data.length,
             data: data,
-            // totalPagados podría calcularse si es necesario para este reporte específico
           };
         } else {
           alert('Por favor selecciona un personal');

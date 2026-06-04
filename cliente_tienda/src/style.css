@@ -329,25 +329,60 @@ textarea:focus {
 /* Modo oscuro (opcional) */
 @media (prefers-color-scheme: dark) {
   :root {
-    --text-primary: #f3f4f6;
-    --text-secondary: #ffffff;
-    --bg-primary: #1f2937;
-    --bg-secondary: #000000;
-    --bg-tertiary: #374151;
-    --border-color: #374151;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f3f4f6;
+    --bg-tertiary: #e5e7eb;
+    --border-color: #d1d5db;
   }
-  
+
+  body {
+    background-color: #f3f4f6;
+    color: #111827;
+  }
+
   .form-input,
   select,
   input,
   textarea {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-    border-color: var(--border-color);
+    background-color: #ffffff;
+    color: #111827;
+    border-color: #d1d5db;
   }
-  
+
   .table-container {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    background-color: #ffffff;
+  }
+
+  .table th {
+    background-color: #f9fafb !important;
+    color: #111827 !important;
+  }
+
+  .table td {
+    background-color: #ffffff !important;
+    color: #374151 !important;
+  }
+
+  .modal {
+    background-color: #ffffff;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    background-color: #ffffff;
+    color: #111827;
+  }
+
+  .stat-card {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  .sidebar {
+    background-color: #1f2937 !important;
   }
 }
 
