@@ -175,7 +175,7 @@ A demo user is available to explore the system:
 
 ---
 
-## 👨Author
+## Author
 
 **Juan Antonio Velázquez Alarcón**  
 Computer Systems Engineering  
