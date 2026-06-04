@@ -1,4 +1,3 @@
-// === api_tienda/src/config/cors.ts - CORREGIDO ===
 import { CorsOptions } from 'cors';
 
 export const corsOptions: CorsOptions = {
@@ -8,7 +7,8 @@ export const corsOptions: CorsOptions = {
     'http://localhost:5173',
     'http://127.0.0.1',
     'http://127.0.0.1:80',
-    'http://127.0.0.1:5173'
+    'http://127.0.0.1:5173',
+    'https://floreria-cliente-production.up.railway.app' 
   ],
   credentials: true,
   optionsSuccessStatus: 200,
